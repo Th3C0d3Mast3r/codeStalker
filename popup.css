@@ -1,121 +1,176 @@
-/* === Dark Mode Base === */
+/* General dark mode styling */
 body {
-  background-color:#121212;
-  color:#f5f5f5;
-  font-family:"Lato",sans-serif;
-  margin:0;
-  padding:20px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  min-width:360px;
+  margin: 0;
+  padding: 0;
+  font-family: "Lato", sans-serif;
+  background-color: #121212;
+  color: #eee;
+  min-width: 350px;
 }
 
-/* === Headings === */
-h1,h2 {
-  font-family:"Boogaloo",sans-serif;
-  font-weight:400;
-  margin-bottom:15px;
-  text-align:center;
-  color:#ffffff;
+/* Header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #333;
 }
 
-/* === Buttons === */
-button {
-  font-family:"Boogaloo",sans-serif;
-  font-size:14px;
-  padding:8px 14px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  margin:8px 0;
-  background-color:#2d2d2d;
-  color:#f5f5f5;
-  transition:background 0.25s ease,transform 0.1s ease;
-}
-button:hover {
-  background-color:#3c3c3c;
-  transform:translateY(-2px);
-}
-button:active {
-  transform:translateY(0);
+h1 {
+  font-size: 1.5rem;
+  margin: 0;
 }
 
-/* === Friend Card Wrapper === */
+/* Buttons */
+.btn {
+  background: #333;
+  color: #eee;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.btn:hover {
+  background: #444;
+}
+.btn.primary {
+  background: #2d89ef;
+  color: #fff;
+}
+.btn.primary:hover {
+  background: #1b65c7;
+}
+
+/* Friends Container */
+#friendsContainer {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Friend Card */
 .friend-card {
-  border-radius:14px;
-  padding:15px;
-  margin:12px 0;
-  width:100%;
-  max-width:340px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.6);
-  text-align:center;
-  transition:transform 0.2s ease;
+  background: #1e1e1e;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
 }
-.friend-card:hover {
-  transform:scale(1.02);
+.friend-card.alt {
+  background: #252525; /* alternating tone */
 }
 
-/* Alternate card tones */
-.friend-card:nth-child(odd) {
-  background-color:#1e1e1e;
-}
-.friend-card:nth-child(even) {
-  background-color:#242424;
-}
-
-/* === Friend Name === */
 .friend-card h3 {
-  font-family:"Lato",sans-serif;
-  font-weight:700;
-  font-size:18px;
-  margin:0 0 12px 0;
-  color:#ffffff;
-  letter-spacing:0.5px;
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.friend-card p {
+  margin: 2px 0;
+  font-size: 0.9rem;
+  color: #aaa;
 }
 
-/* === Submission List === */
+/* Submissions list */
 .friend-card ul {
-  list-style:none;
-  padding:0;
-  margin:0;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
 }
-.friend-card li {
-  font-size:13px;
-  font-weight:300;
-  color:#d0d0d0;
-  margin:5px 0;
-  text-align:center;
-  word-break:break-word;
-  padding:4px 6px;
-  border-radius:6px;
-  transition:background 0.2s;
-}
-.friend-card li:hover {
-  background-color:#333333;
+.friend-card ul li {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* === "More" link === */
-.friend-card .more {
-  font-size:12px;
-  color:#999;
-  margin-top:8px;
-  display:block;
-  text-align:center;
-}
-.friend-card .more:hover {
-  color:#bbb;
+/* Footer */
+.friend-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
 }
 
-#cf-status {
-  font-weight: bold;
+/* Status Badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+.status-badge.online::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ff66;
+  display: inline-block;
+  margin-right: 6px;
+}
+.status-badge.offline::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff3333;
+  display: inline-block;
+  margin-right: 6px;
 }
 
-#cf-status.online {
-  color: green;
+/* Remove button */
+.remove-btn {
+  background: #c62828;
+  color: #fff;
+  padding: 3px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.remove-btn:hover {
+  background: #a10d0d;
 }
 
-#cf-status.offline {
-  color: red;
+/* Modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal.hidden {
+  display: none;
+}
+.modalCard {
+  background: #1e1e1e;
+  padding: 16px;
+  border-radius: 10px;
+  width: 300px;
+}
+.modalCard label {
+  display: block;
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+.modalCard input {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #121212;
+  color: #eee;
+}
+.row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
 }

@@ -5,7 +5,7 @@ function saveFriends(friends) {
   localStorage.setItem("friends", JSON.stringify(friends));
 }
 
-
+// ===== Codeforces API =====
 async function fetchCodeforcesData(handle) {
   try {
     const res = await fetch(`https://codeforces.com/api/user.status?handle=${handle}&from=1&count=10`);
@@ -24,8 +24,23 @@ async function fetchCodeforcesData(handle) {
   }
 }
 
+async function fetchCFOnlineStatus(handle) {
+  try {
+    const res = await fetch(`https://codeforces.com/api/user.info?handles=${handle}`);
+    const data = await res.json();
+    if (data.status!=="OK") return "OFFLINE";
 
+    const lastOnline = data.result[0].lastOnlineTimeSeconds * 1000;
+    const diff = Date.now() - lastOnline;
 
+    return diff <= 1 * 60 * 1000 ? "ONLINE" : "OFFLINE";
+  } catch (err) {
+    console.error("CF status error:", err);
+    return "OFFLINE";
+  }
+}
+
+// ===== LeetCode (scraped) =====
 async function fetchLeetCodeData(username) {
   try {
     const res = await fetch(`https://leetcode.com/u/${username}/`);
@@ -34,13 +49,11 @@ async function fetchLeetCodeData(username) {
 
     const submissions = [...doc.querySelectorAll('[data-title]')].map(el => {
       const problem = el.getAttribute("data-title");
-      const timeText = el.querySelector("span")?.innerText || "";
       return {
         platform: "LeetCode",
-        verdict: "ACCEPTED", // only showing solved list
+        verdict: "ACCEPTED",
         problem,
-        time: new Date(), // fallback since LC doesn't expose exact timestamp in text
-        timeText
+        time: new Date()
       };
     });
 
@@ -51,77 +64,78 @@ async function fetchLeetCodeData(username) {
   }
 }
 
-
-
-
-function renderFriendCard(friend, activities) {
+// ===== Rendering =====
+function renderFriendCard(friend, activities, index) {
   const container = document.createElement("div");
   container.className = "friend-card";
+  if (index % 2 === 1) container.classList.add("alt");
 
-  // Header
+  // Name
   const header = document.createElement("h3");
   header.textContent = friend.realName;
   container.appendChild(header);
 
-  const codeforcesId=document.createElement("p");
-  codeforcesId.textContent=`@${friend.codeforces || "N/A"}`;
-  container.appendChild(codeforcesId);
+  // Handles
+  const handles = document.createElement("p");
+  handles.textContent = `@${friend.codeforces || "N/A"} | @${friend.leetcode || "N/A"}`;
+  container.appendChild(handles);
 
-  const leetcodeId=document.createElement("p");
-  leetcodeId.textContent=`@${friend.leetcode || "N/A"}`;
-  container.appendChild(leetcodeId);
-
-  // make the leetcodeID and codeforcesID on the same line
-    codeforcesId.style.display="inline-block";
-    leetcodeId.style.display="inline-block";
-    leetcodeId.style.marginLeft="10px";
-    codeforcesId.style.marginRight="10px";
-    codeforcesId.style.fontWeight="light";
-    leetcodeId.style.fontWeight="light";
-    
-
-  // Stats List
+  // Submissions
   const list = document.createElement("ul");
   activities.slice(0, 6).forEach(act => {
     const li = document.createElement("li");
     li.textContent = `[${act.verdict}] ${act.platform} - ${act.problem}`;
     list.appendChild(li);
   });
-
   if (activities.length > 6) {
     const more = document.createElement("li");
     more.textContent = "more...";
     list.appendChild(more);
   }
-
-  // here, I want to add a horizontal divider
-    const hr = document.createElement("hr");
-    container.appendChild(hr);
-
-    // now, I want to show, if he is ACTIVE or INACTIVE on Codeforces
-    const status = document.createElement("p");
-    const now = new Date();
-    const lastCfAct = activities.find(act => act.platform === "Codeforces");
-    if (lastCfAct && (now - lastCfAct.time) < 7 * 24 * 60 * 60 * 1000) {
-      status.textContent = "Status: ACTIVE on Codeforces";
-      status.style.color = "green";
-    } else {
-      status.textContent = "Status: INACTIVE on Codeforces";
-      status.style.color = "red";
-    }
-
   container.appendChild(list);
+
+  // Footer
+  const footer = document.createElement("div");
+  footer.className = "friend-footer";
+
+  const statusBadge = document.createElement("span");
+  statusBadge.className = "status-badge";
+  statusBadge.textContent = "Checking...";
+  footer.appendChild(statusBadge);
+
+  const removeBtn = document.createElement("button");
+  removeBtn.className = "remove-btn";
+  removeBtn.textContent = "REMOVE";
+  removeBtn.addEventListener("click", () => {
+    let friends = getFriends();
+    friends = friends.filter(f => f.realName !== friend.realName);
+    saveFriends(friends);
+    renderFriends();
+  });
+  footer.appendChild(removeBtn);
+
+  container.appendChild(footer);
+
+  // Fetch online status
+  if (friend.codeforces) {
+    fetchCFOnlineStatus(friend.codeforces).then(status => {
+      statusBadge.textContent = status;
+      statusBadge.classList.remove("online", "offline");
+      if (status === "ONLINE") statusBadge.classList.add("online");
+      else statusBadge.classList.add("offline");
+    });
+  }
+
   return container;
 }
-
-
 
 async function renderFriends() {
   const friendsContainer = document.getElementById("friendsContainer");
   friendsContainer.innerHTML = "";
 
   const friends = getFriends();
-  for (let friend of friends) {
+  for (let i = 0; i < friends.length; i++) {
+    const friend = friends[i];
     let allActs = [];
 
     if (friend.codeforces) {
@@ -133,14 +147,13 @@ async function renderFriends() {
       allActs = allActs.concat(lcActs);
     }
 
-    // Sort by time (newest first)
     allActs.sort((a, b) => b.time - a.time);
-
-    const card = renderFriendCard(friend, allActs);
+    const card = renderFriendCard(friend, allActs, i);
     friendsContainer.appendChild(card);
   }
 }
 
+// ===== Modal Logic =====
 document.getElementById("saveFriendBtn")?.addEventListener("click", () => {
   const realName = document.getElementById("inRealName").value.trim();
   const cfHandle = document.getElementById("inCodeforces").value.trim();
@@ -166,3 +179,4 @@ document.getElementById("addFriendBtn")?.addEventListener("click", () => {
 
 // ===== Init =====
 renderFriends();
+setInterval(renderFriends, 5 * 60 * 1000); // refresh every 5 mins
