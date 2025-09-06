@@ -1,0 +1,121 @@
+/* === Dark Mode Base === */
+body {
+  background-color:#121212;
+  color:#f5f5f5;
+  font-family:"Lato",sans-serif;
+  margin:0;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  min-width:360px;
+}
+
+/* === Headings === */
+h1,h2 {
+  font-family:"Boogaloo",sans-serif;
+  font-weight:400;
+  margin-bottom:15px;
+  text-align:center;
+  color:#ffffff;
+}
+
+/* === Buttons === */
+button {
+  font-family:"Boogaloo",sans-serif;
+  font-size:14px;
+  padding:8px 14px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  margin:8px 0;
+  background-color:#2d2d2d;
+  color:#f5f5f5;
+  transition:background 0.25s ease,transform 0.1s ease;
+}
+button:hover {
+  background-color:#3c3c3c;
+  transform:translateY(-2px);
+}
+button:active {
+  transform:translateY(0);
+}
+
+/* === Friend Card Wrapper === */
+.friend-card {
+  border-radius:14px;
+  padding:15px;
+  margin:12px 0;
+  width:100%;
+  max-width:340px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.6);
+  text-align:center;
+  transition:transform 0.2s ease;
+}
+.friend-card:hover {
+  transform:scale(1.02);
+}
+
+/* Alternate card tones */
+.friend-card:nth-child(odd) {
+  background-color:#1e1e1e;
+}
+.friend-card:nth-child(even) {
+  background-color:#242424;
+}
+
+/* === Friend Name === */
+.friend-card h3 {
+  font-family:"Lato",sans-serif;
+  font-weight:700;
+  font-size:18px;
+  margin:0 0 12px 0;
+  color:#ffffff;
+  letter-spacing:0.5px;
+}
+
+/* === Submission List === */
+.friend-card ul {
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+.friend-card li {
+  font-size:13px;
+  font-weight:300;
+  color:#d0d0d0;
+  margin:5px 0;
+  text-align:center;
+  word-break:break-word;
+  padding:4px 6px;
+  border-radius:6px;
+  transition:background 0.2s;
+}
+.friend-card li:hover {
+  background-color:#333333;
+}
+
+/* === "More" link === */
+.friend-card .more {
+  font-size:12px;
+  color:#999;
+  margin-top:8px;
+  display:block;
+  text-align:center;
+}
+.friend-card .more:hover {
+  color:#bbb;
+}
+
+#cf-status {
+  font-weight: bold;
+}
+
+#cf-status.online {
+  color: green;
+}
+
+#cf-status.offline {
+  color: red;
+}

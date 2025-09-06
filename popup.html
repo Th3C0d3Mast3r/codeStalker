@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Friend Tracker</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Boogaloo&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <h1 class="boogaloo">Hello User</h1>
+    <button id="addFriendBtn" class="boogaloo btn">ADD FRIEND</button>
+  </header>
+
+  <main id="friendsContainer">
+    <p id="cf-status">Checking...</p>
+    <!-- Friends will be rendered here -->
+  </main>
+
+  <!-- Modal for Adding Friend -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modalCard">
+    <h2 class="boogaloo">Add Friend</h2>
+    <label>Real name
+      <input id="inRealName" placeholder="Your Real Name">
+    </label>
+    <label>Codeforces Username
+      <input id="inCodeforces" placeholder="cf_handle">
+    </label>
+    <label>LeetCode Username
+      <input id="inLeetcode" placeholder="lc_handle">
+    </label>
+    <div class="row">
+      <button id="saveFriendBtn" class="boogaloo btn primary">SAVE</button>
+      <button id="cancelBtn" class="boogaloo btn">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+
+  <script src="popup.js"></script>
+</body>
+</html>
