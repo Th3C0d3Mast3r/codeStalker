@@ -1,3 +1,5 @@
+![Static Badge](https://img.shields.io/badge/Status-WORKING-green) ![Static Badge](https://img.shields.io/badge/Version-1-white)
+
 # CodeStalker
 A Minimalist and a Lightweight Chrome Extension for seeing your Friends coding and what they code. The extension is primarily made to pick up the submissions from Leetcode and Codeforces *(CF has its inbuilt APIs, but Leetcode doesn't so tried the way around)*
 
