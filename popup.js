@@ -15,7 +15,7 @@ async function fetchCodeforcesData(handle) {
     return data.result.map(sub => ({
       platform: "Codeforces",
       verdict: sub.verdict || "UNKNOWN",
-      problem: `${sub.problem.contestId}-${sub.problem.index}: ${sub.problem.name}`,
+      problem: `${sub.problem.contestId}-${sub.problem.index}`,
       time: new Date(sub.creationTimeSeconds * 1000)
     }));
   } catch (err) {
@@ -26,39 +26,52 @@ async function fetchCodeforcesData(handle) {
 
 async function fetchCFOnlineStatus(handle) {
   try {
-    const res = await fetch(`https://codeforces.com/api/user.info?handles=${handle}`);
+    const res = await fetch(`https://codeforces.com/api/user.info?handles=${handle}?`);
     const data = await res.json();
-    if (data.status!=="OK") return "OFFLINE";
+    if (data.status !== "OK" || !data.result || !data.result.length) return "UNKNOWN";
 
-    const lastOnline = data.result[0].lastOnlineTimeSeconds * 1000;
-    const diff = Date.now() - lastOnline;
+    const onlineTime = data.result[0].lastOnlineTimeSeconds; // already in seconds
+    const currentTime = Math.floor(Date.now()/1000); // convert ms to seconds
 
-    return diff <= 1 * 60 * 1000 ? "ONLINE" : "OFFLINE";
+    // make the below to last online time in minutes
+    console.log(`${handle} last online: ${Math.floor((currentTime-onlineTime)/60)} minutes ago`);
+
+    return (currentTime-onlineTime<=25*60) ? "ONLINE" : (currentTime-onlineTime>25*60 && currentTime-onlineTime<=40*60)?"RECENTLY ONLINE":"OFFLINE";
   } catch (err) {
-    console.error("CF status error:", err);
-    return "OFFLINE";
+    console.error("CF status fetch error:", err);
+    return "UNKNOWN";
   }
 }
+
 
 // ===== LeetCode (scraped) =====
 async function fetchLeetCodeData(username) {
   try {
-    const res = await fetch(`https://leetcode.com/u/${username}/`);
-    const text = await res.text();
-    const doc = new DOMParser().parseFromString(text, "text/html");
-
-    const submissions = [...doc.querySelectorAll('[data-title]')].map(el => {
-      const problem = el.getAttribute("data-title");
-      return {
-        platform: "LeetCode",
-        verdict: "ACCEPTED",
-        problem,
-        time: new Date()
-      };
+    const res = await fetch("https://leetcode.com/graphql", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        query:`
+          query recentAcSubmissions($username: String!) {
+            recentAcSubmissionList(username: $username) {
+              title
+              timestamp
+            }
+          }
+        `,
+        variables:{ username }
+      })
     });
-
-    return submissions;
-  } catch (err) {
+    const data=await res.json();
+    return data.data.recentAcSubmissionList.map(sub=>({
+      platform:"LeetCode",
+      verdict:"ACCEPTED",
+      problem:sub.title,
+      time:new Date(sub.timestamp*1000)
+    }));
+  } catch(err) {
     console.error("LC fetch error:", err);
     return [];
   }
@@ -80,11 +93,37 @@ function renderFriendCard(friend, activities, index) {
   handles.textContent = `@${friend.codeforces || "N/A"} | @${friend.leetcode || "N/A"}`;
   container.appendChild(handles);
 
-  // Submissions
+  // Submissions List
   const list = document.createElement("ul");
-  activities.slice(0, 6).forEach(act => {
+  activities.slice(0,6).forEach(act => {
     const li = document.createElement("li");
-    li.textContent = `[${act.verdict}] ${act.platform} - ${act.problem}`;
+    const verdictSpan = document.createElement("span");
+    verdictSpan.textContent = `[${act.verdict}] `;
+
+    // Verdict colors
+    if(act.verdict === "OK"){
+      verdictSpan.style.color = "#01d556ff"; // green
+      verdictSpan.style.fontWeight = "bold";
+    }
+    else if(act.verdict === "WRONG_ANSWER"){
+      verdictSpan.style.color = "#ce0000ff"; // red
+      verdictSpan.style.fontWeight = "bold";
+    }
+    else if(act.verdict === "TIME_LIMIT_EXCEEDED"){
+      verdictSpan.style.color = "#c59d00ff"; // yellow
+      verdictSpan.style.fontWeight = "bold";
+    }
+    else if(act.verdict === "ACCEPTED"){
+      verdictSpan.style.color = "#01d556ff"; // green
+      verdictSpan.style.fontWeight = "bold";
+    }
+    else {
+      verdictSpan.style.color = "#bbb"; // fallback grey
+      verdictSpan.style.fontWeight = "bold";
+    }
+
+    li.appendChild(verdictSpan);
+    li.appendChild(document.createTextNode(`${act.platform} - ${act.problem}`));
     list.appendChild(li);
   });
   if (activities.length > 6) {
@@ -92,15 +131,28 @@ function renderFriendCard(friend, activities, index) {
     more.textContent = "more...";
     list.appendChild(more);
   }
+
+  // Collapse submissions for non-ONLINE friends
+  if(friend.status !== "ONLINE"){
+    list.style.display = "none"; // hide initially
+    container.addEventListener("mouseenter", () => { list.style.display = "block"; });
+    container.addEventListener("mouseleave", () => { list.style.display = "none"; });
+  }
+
   container.appendChild(list);
 
-  // Footer
+  // Footer: status + remove
   const footer = document.createElement("div");
   footer.className = "friend-footer";
 
   const statusBadge = document.createElement("span");
   statusBadge.className = "status-badge";
-  statusBadge.textContent = "Checking...";
+  statusBadge.textContent = friend.status || "UNKNOWN";
+
+  if(friend.status === "ONLINE") statusBadge.classList.add("online");
+  else if(friend.status === "OFFLINE") statusBadge.classList.add("offline");
+  else if(friend.status === "RECENTLY ONLINE") statusBadge.classList.add("recently-online");
+
   footer.appendChild(statusBadge);
 
   const removeBtn = document.createElement("button");
@@ -116,16 +168,6 @@ function renderFriendCard(friend, activities, index) {
 
   container.appendChild(footer);
 
-  // Fetch online status
-  if (friend.codeforces) {
-    fetchCFOnlineStatus(friend.codeforces).then(status => {
-      statusBadge.textContent = status;
-      statusBadge.classList.remove("online", "offline");
-      if (status === "ONLINE") statusBadge.classList.add("online");
-      else statusBadge.classList.add("offline");
-    });
-  }
-
   return container;
 }
 
@@ -134,8 +176,24 @@ async function renderFriends() {
   friendsContainer.innerHTML = "";
 
   const friends = getFriends();
-  for (let i = 0; i < friends.length; i++) {
-    const friend = friends[i];
+
+  const friendsWithStatus = await Promise.all(
+    friends.map(async friend => {
+      let status = "UNKNOWN";
+      if (friend.codeforces) {
+        status = await fetchCFOnlineStatus(friend.codeforces);
+      }
+      return { ...friend, status };
+    })
+  );
+
+  friendsWithStatus.sort((a, b) => {
+    const priority = s => s === "ONLINE" ? 0 : s === "RECENTLY ONLINE" ? 1 : 2;
+    return priority(a.status) - priority(b.status);
+  });
+
+  for (let i = 0; i < friendsWithStatus.length; i++) {
+    const friend = friendsWithStatus[i];
     let allActs = [];
 
     if (friend.codeforces) {
@@ -153,11 +211,12 @@ async function renderFriends() {
   }
 }
 
+
 // ===== Modal Logic =====
 document.getElementById("saveFriendBtn")?.addEventListener("click", () => {
-  const realName = document.getElementById("inRealName").value.trim();
-  const cfHandle = document.getElementById("inCodeforces").value.trim();
-  const lcHandle = document.getElementById("inLeetcode").value.trim();
+  const realName = document.getElementById("friendName").value.trim();
+  const cfHandle = document.getElementById("cfHandle").value.trim();
+  const lcHandle = document.getElementById("lcHandle").value.trim();
 
   if (!realName) return alert("Please enter a real name!");
 
@@ -165,18 +224,36 @@ document.getElementById("saveFriendBtn")?.addEventListener("click", () => {
   friends.push({ realName, codeforces: cfHandle, leetcode: lcHandle });
   saveFriends(friends);
 
-  document.getElementById("modal").classList.add("hidden");
+  document.getElementById("friendName").value = "";
+  document.getElementById("cfHandle").value = "";
+  document.getElementById("lcHandle").value = "";
+
+  modal.style.display = "none";
+  backdrop.style.display = "none";
   renderFriends();
 });
 
-document.getElementById("cancelBtn")?.addEventListener("click", () => {
-  document.getElementById("modal").classList.add("hidden");
+const addFriendBtn = document.getElementById("addFriendBtn"); // your existing button
+const modal = document.getElementById("addFriendModal");
+const backdrop = document.getElementById("modalBackdrop");
+const cancelBtn = document.getElementById("cancelFriendBtn");
+
+addFriendBtn.addEventListener("click", () => {
+  modal.style.display = "block";
+  backdrop.style.display = "block";
 });
 
-document.getElementById("addFriendBtn")?.addEventListener("click", () => {
-  document.getElementById("modal").classList.remove("hidden");
+cancelBtn.addEventListener("click", () => {
+  modal.style.display = "none";
+  backdrop.style.display = "none";
+});
+
+// close if backdrop clicked
+backdrop.addEventListener("click", () => {
+  modal.style.display = "none";
+  backdrop.style.display = "none";
 });
 
 // ===== Init =====
 renderFriends();
-setInterval(renderFriends, 5 * 60 * 1000); // refresh every 5 mins
+setInterval(renderFriends, 2 * 60 * 1000); // refresh every 2 mins
