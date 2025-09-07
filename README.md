@@ -21,7 +21,7 @@ A Minimalist and a Lightweight Chrome Extension for seeing your Friends coding a
 | Version | Date       | Features / Changes Implemented |
 |---------|------------|-------------------------------|
 | 1.0.0   | 7 Sept, 2025 | Initial release: <br>- Add friends by username <br>- Display online/offline status <br>- Show last 6 submissions on Codeforces and LeetCode <br>- Vanilla JS implementation <br>- Direct deploy, no sign-in required |
-| 1.1.0   | TBD        | In Process |
+| 1.1.0   | TBD        | Notification when some Friend makes a Submission-Real Time Alerts *(and option to mute notifications, or keep on)* |
 
 ## CONTRIBUTING
 For any Suggestions, Bug Fixes or Feature Implementations, make a PR or Write the Same in the `Issues` tab.
