@@ -20,7 +20,7 @@ A Minimalist and a Lightweight Chrome Extension for seeing your Friends coding a
 
 | Version | Date       | Features / Changes Implemented |
 |---------|------------|-------------------------------|
-| 1.0.0   | 2025-09-07 | Initial release: <br>- Add friends by username <br>- Display online/offline status <br>- Show last 6 submissions on Codeforces and LeetCode <br>- Vanilla JS implementation <br>- Direct deploy, no sign-in required |
+| 1.0.0   | 7 Sept, 2025 | Initial release: <br>- Add friends by username <br>- Display online/offline status <br>- Show last 6 submissions on Codeforces and LeetCode <br>- Vanilla JS implementation <br>- Direct deploy, no sign-in required |
 | 1.1.0   | TBD        | In Process |
 
 ## CONTRIBUTING
