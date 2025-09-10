@@ -16,12 +16,12 @@ A Minimalist and a Lightweight Chrome Extension for seeing your Friends coding a
 - Enable **DEVELOPER MODE** > Load Unpacked > Select Folder
 - Next Step . . . . . Well, there is no Next Step, head on to Chrome and run that
 
-- ## VERSION HISTORY
+## VERSION HISTORY
 
 | Version | Date       | Features / Changes Implemented |
 |---------|------------|-------------------------------|
 | 1.0.0   | 7 Sept, 2025 | Initial release: <br>- Add friends by username <br>- Display online/offline status <br>- Show last 6 submissions on Codeforces and LeetCode <br>- Vanilla JS implementation <br>- Direct deploy, no sign-in required |
-| 1.1.0   | TBD        | Enable Search Friends *(from added friends)*, Edit Details of Friends and some UI Updates|
+| 1.0.1   | 10 Sept, 2025        | Edit Details of the Friends already added|
 
 ## CONTRIBUTING
 For any Suggestions, Bug Fixes or Feature Implementations, make a PR or Write the Same in the `Issues` tab.
