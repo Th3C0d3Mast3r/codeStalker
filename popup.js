@@ -155,6 +155,20 @@ function renderFriendCard(friend, activities, index) {
 
   footer.appendChild(statusBadge);
 
+  // this is the place where I add the EDIT BUTTON
+  const editBtn=document.createElement("button");
+  editBtn.className="edit-btn";
+  editBtn.textContent="EDIT";
+  editBtn.addEventListener("click",()=>{
+    document.getElementById("friendName").value=friend.realName;
+    document.getElementById("cfHandle").value=friend.codeforces || "";
+    document.getElementById("lcHandle").value=friend.leetcode || "";
+    saveFriends(getFriends().filter(f=>f.realName!==friend.realName)); // remove old entry
+    modal.style.display="block";
+    backdrop.style.display="block";
+  });
+  footer.appendChild(editBtn);
+
   const removeBtn = document.createElement("button");
   removeBtn.className = "remove-btn";
   removeBtn.textContent = "REMOVE";

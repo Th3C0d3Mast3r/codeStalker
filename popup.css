@@ -21,6 +21,7 @@ header {
 }
 
 h1 {
+  padding-top: -15px;
   font-family: "Boogaloo", cursive;
   font-size: 6rem;
   margin-bottom: 10px;
@@ -192,6 +193,28 @@ button.btn:hover {
 .remove-btn:hover {
   color: white;
   background-color: red;
+  border-radius: 8px;
+  transform: scale(1.2);
+  transition: ease-in-out 0.2s;
+}
+
+/* Edit Button */
+.edit-btn {
+  position: relative;
+  left: 70px;
+  background: none;
+  border: none;
+  color: #bbb;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  position: relative;
+  left: 70px;
+  color: white;
+  background-color: rgb(91, 91, 91);
   border-radius: 8px;
   transform: scale(1.2);
   transition: ease-in-out 0.2s;
