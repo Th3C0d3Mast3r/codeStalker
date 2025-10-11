@@ -123,7 +123,18 @@ function renderFriendCard(friend, activities, index) {
     }
 
     li.appendChild(verdictSpan);
-    li.appendChild(document.createTextNode(`${act.platform} - ${act.problem}`));
+    const dateStr=act.time.toLocaleString().substring(0,9); // submission date
+    const grayDate=`%c(${dateStr})`;
+    const normalText=`${act.platform} - ${act.problem} `;
+    const text=document.createTextNode(`${normalText}`);
+    li.appendChild(text);
+
+    // create a span just for the gray date
+    const dateSpan=document.createElement("span");
+    dateSpan.textContent=`(${dateStr})`;
+    dateSpan.style.color="gray";
+
+    li.appendChild(dateSpan);
     list.appendChild(li);
   });
   if (activities.length > 6) {
@@ -134,9 +145,12 @@ function renderFriendCard(friend, activities, index) {
 
   // Collapse submissions for non-ONLINE friends
   if(friend.status !== "ONLINE"){
-    list.style.display = "none"; // hide initially
-    container.addEventListener("mouseenter", () => { list.style.display = "block"; });
-    container.addEventListener("mouseleave", () => { list.style.display = "none"; });
+    list.style.display="none";
+    let expanded=false;
+    container.addEventListener("click",()=>{
+      expanded=!expanded;
+      list.style.display=expanded?"block":"none";
+    });
   }
 
   container.appendChild(list);
