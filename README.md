@@ -22,7 +22,7 @@ A Minimalist and a Lightweight Chrome Extension for seeing your Friends coding a
 |---------|------------|-------------------------------|
 | 1.0.0   | 7 Sept, 2025 | Initial release: <br>- Add friends by username <br>- Display online/offline status <br>- Show last 6 submissions on Codeforces and LeetCode <br>- Vanilla JS implementation <br>- Direct deploy, no sign-in required |
 | 1.0.1   | 10 Sept, 2025        | Edit Details of the Friends already added|
-| 1.0.2   | 11th Oct, 2025       | Date of Submission along with Card Dropdown on Click (not hover based) 
+| 1.0.2   | 11th Oct, 2025       | Date of Submission along with Card Dropdown on Click (not hover based)  - suggested by a friend- @blast978
 
 ## CONTRIBUTING
 For any Suggestions, Bug Fixes or Feature Implementations, make a PR or Write the Same in the `Issues` tab.
