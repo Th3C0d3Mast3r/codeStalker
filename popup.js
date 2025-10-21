@@ -123,7 +123,7 @@ function renderFriendCard(friend, activities, index) {
     }
 
     li.appendChild(verdictSpan);
-    const dateStr=act.time.toLocaleString().substring(0,9); // submission date
+    const dateStr=act.time.toLocaleString().substring(0,10); // submission date
     const grayDate=`%c(${dateStr})`;
     const normalText=`${act.platform} - ${act.problem} `;
     const text=document.createTextNode(`${normalText}`);
@@ -199,6 +199,9 @@ function renderFriendCard(friend, activities, index) {
   return container;
 }
 
+// ===== Modified renderFriends() with ALERT feature =====
+let previousStates = {}; // keeps last known status + latest submission time
+
 async function renderFriends() {
   const friendsContainer = document.getElementById("friendsContainer");
   friendsContainer.innerHTML = "";
@@ -234,10 +237,33 @@ async function renderFriends() {
     }
 
     allActs.sort((a, b) => b.time - a.time);
+
+    // ======= ALERT LOGIC START =======
+    const lastSubmissionTime = allActs.length ? allActs[0].time.getTime() : 0;
+    const prev = previousStates[friend.realName] || {};
+
+    // If friend just came ONLINE
+    if (prev.status && prev.status !== "ONLINE" && friend.status === "ONLINE") {
+      alert(`${friend.realName} is now ONLINE!`);
+    }
+
+    // If new submission detected
+    if (prev.lastSubmissionTime && lastSubmissionTime > prev.lastSubmissionTime) {
+      alert(`${friend.realName} just made a new submission!`);
+    }
+
+    // Save updated state
+    previousStates[friend.realName] = {
+      status: friend.status,
+      lastSubmissionTime
+    };
+    // ======= ALERT LOGIC END =======
+
     const card = renderFriendCard(friend, allActs, i);
     friendsContainer.appendChild(card);
   }
 }
+
 
 
 // ===== Modal Logic =====
