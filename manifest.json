@@ -5,6 +5,12 @@
     "description":"An extension that allows you to see what your coding friends are practising",
     "permissions": ["storage", "alarms", "notifications", "tabs"],
 
+    "icons":{
+        "16":"./icons/icon1.svg",
+        "48":"./icons/icon1.svg",
+        "128":"./icons/icon1.svg"
+    },
+
     "host_permissions":[
         "https://leetcode.com/*",
         "https://codeforces.com/*"

@@ -143,6 +143,15 @@ function renderFriendCard(friend, activities, index) {
     list.appendChild(more);
   }
 
+  // HEATMAP
+  const heatmapBox = document.createElement("div");
+  heatmapBox.className = "heatmap-container";
+  container.appendChild(heatmapBox);
+
+  if(friend.codeforces){
+    renderCFHeatmap(friend.codeforces, heatmapBox);
+  }
+
   // Collapse submissions for non-ONLINE friends
   if(friend.status !== "ONLINE"){
     list.style.display="none";
@@ -307,6 +316,140 @@ backdrop.addEventListener("click", () => {
   modal.style.display = "none";
   backdrop.style.display = "none";
 });
+
+// global tooltip
+const cfTooltip = document.createElement("div");
+cfTooltip.style.position = "fixed";
+cfTooltip.style.background = "rgba(0,0,0,0.8)";
+cfTooltip.style.color = "#fff";
+cfTooltip.style.padding = "6px 8px";
+cfTooltip.style.borderRadius = "4px";
+cfTooltip.style.fontSize = "12px";
+cfTooltip.style.pointerEvents = "none";
+cfTooltip.style.zIndex = "99999";
+cfTooltip.style.display = "none";
+document.body.appendChild(cfTooltip);
+
+
+// ===== CODEFORCES HEATMAP (VANILLA JS) =====
+
+async function fetchCFHeatmapData(username) {
+  try {
+    const res = await fetch(`https://codeforces.com/api/user.status?handle=${username}`);
+    const json = await res.json();
+    if (json.status !== "OK") return [];
+
+    const submissions = json.result;
+    const counts = {};
+
+    submissions.forEach(sub => {
+      const date = new Date(sub.creationTimeSeconds * 1000);
+      const key = date.toISOString().split("T")[0];
+      counts[key] = (counts[key] || 0) + 1;
+    });
+
+    const today = new Date();
+    const start = new Date(today.getFullYear(), 0, 1);
+    const days = d3.timeDays(start, today);
+
+    return days.map(d => {
+      const key = d.toISOString().split("T")[0];
+      return { date: d, value: counts[key] || 0 };
+    });
+
+  } catch (err) {
+    console.error("Heatmap Fetch Error:", err);
+    return [];
+  }
+}
+
+async function renderCFHeatmap(username, container) {
+  const cfData = await fetchCFHeatmapData(username);
+  if (!cfData.length) return;
+
+  const width = 900;
+  const height = 200;
+  const cellSize = 15;
+
+  // Clear container
+  container.innerHTML = "";
+
+  const svg = d3.select(container)
+  .append("svg")
+  .attr("viewBox", `0 0 ${width} ${height}`)
+  .attr("preserveAspectRatio", "xMinYMin meet")
+  .style("width", "100%")
+  .style("height", "auto")
+  .style("display", "block"); // removes phantom scrollbars
+
+  const selected = "#10a300";
+
+  const color = d3.scaleLinear()
+    .range(["#2e2e2e", selected])
+    .domain([0, d3.max(cfData, d => d.value) || 1]);
+
+  // Draw cells
+  // ===== DRAW CELLS + TOOLTIP =====
+svg.append("g")
+  .attr("transform", "translate(40,20)")
+  .selectAll("rect")
+  .data(cfData)
+  .enter()
+  .append("rect")
+  .attr("width", cellSize)
+  .attr("height", cellSize)
+  .attr("x", d => d3.timeWeek.count(d3.timeYear(d.date), d.date) * cellSize)
+  .attr("y", d => d.date.getDay() * cellSize)
+  .attr("fill", d => color(d.value))
+  .attr("rx", 3).attr("ry", 3)
+
+  // ===== Tooltip Events =====
+  .on("mouseover", function(event, d) {
+    const dateStr = d.date.toISOString().split("T")[0];
+    cfTooltip.innerHTML =
+      `<b>${dateStr}</b><br>` +
+      `Submissions: <b>${d.value}</b>`;
+    cfTooltip.style.display = "block";
+  })
+  .on("mousemove", function(event) {
+    cfTooltip.style.left = event.pageX + 10 + "px";
+    cfTooltip.style.top = event.pageY + 10 + "px";
+  })
+  .on("mouseout", function() {
+    cfTooltip.style.display = "none";
+  });
+
+
+  // Month Labels
+  const months = d3.timeMonths(new Date(new Date().getFullYear(), 0, 1), new Date());
+
+  svg.append("g")
+    .attr("transform", "translate(40,15)")
+    .selectAll("text")
+    .data(months)
+    .enter()
+    .append("text")
+    .text(d => d3.timeFormat("%b")(d))
+    .attr("x", d => d3.timeWeek.count(d3.timeYear(d), d) * cellSize)
+    .attr("y", -5)
+    .attr("font-size", "12px")
+    .attr("fill", "#888");
+
+  // Weekday Labels
+  const weekdays = ["Sun", "Tue", "Thu", "Sat"];
+
+  svg.append("g")
+    .attr("transform", "translate(5,20)")
+    .selectAll("text")
+    .data(weekdays)
+    .enter()
+    .append("text")
+    .text(d => d)
+    .attr("y", (d, i) => (i * 2 + 1) * cellSize)
+    .attr("font-size", "11px")
+    .attr("fill", "#777");
+}
+
 
 // ===== Init =====
 renderFriends();
