@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Friend Tracker</title>
+  <title>CodeStalker - Stalk your Friends Coding</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,40 +19,41 @@
     <div id="newsBanner">
     ⚠️UPDATE: Upcoming Web-App is in the works!
   </div> 
+  <div class="app-wrapper">
+      <header>
+        <h1 class="boogaloo">Hello, User</h1>
+        <button id="addFriendBtn" class="boogaloo btn">ADD FRIEND</button>
+      </header>
 
-  <header>
-    <h1 class="boogaloo">Hello, User</h1>
-    <button id="addFriendBtn" class="boogaloo btn">ADD FRIEND</button>
-  </header>
+      <main id="friendsContainer">
+        <!-- Friends will be rendered here -->
+      </main>
 
-  <main id="friendsContainer">
-    <!-- Friends will be rendered here -->
-  </main>
+      <!-- Modal for Adding Friend -->
+      <!-- Backdrop -->
+    <div id="modalBackdrop"></div>
 
-  <!-- Modal for Adding Friend -->
-  <!-- Backdrop -->
-<div id="modalBackdrop"></div>
+    <!-- Add Friend Modal -->
+    <div id="addFriendModal">
+      <h2>Add Friend Details</h2>
+      <input id="friendName" type="text" placeholder="Name" />
+      <input id="cfHandle" type="text" placeholder="Codeforces Handle" />
+      <input id="lcHandle" type="text" placeholder="LeetCode Handle" />
+      <button id="saveFriendBtn">Save</button>
+      <button id="cancelFriendBtn">Cancel</button>
+    </div>
 
-<!-- Add Friend Modal -->
-<div id="addFriendModal">
-  <h2>Add Friend Details</h2>
-  <input id="friendName" type="text" placeholder="Name" />
-  <input id="cfHandle" type="text" placeholder="Codeforces Handle" />
-  <input id="lcHandle" type="text" placeholder="LeetCode Handle" />
-  <button id="saveFriendBtn">Save</button>
-  <button id="cancelFriendBtn">Cancel</button>
-</div>
-
-<!-- FOOTER -->
-<footer style="background-color:#ffffff; color:#000; padding:5px 0; text-align:center; font-family:Arial, sans-serif; font-size:14px;">
-  <p style="margin:0;">
-    <strong>Devesh Acharya</strong> &nbsp;·&nbsp; 
-    <a href="https://github.com/Th3C0d3Mast3r/codeStalker" target="_blank" style="color:#000; text-decoration:none; margin:0 5px;">
-      <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/github.svg" alt="GitHub" style="width:16px; height:16px; vertical-align:middle;">
-    </a> &nbsp;·&nbsp; 2025 ·&nbsp;
-    <a style="color: rgb(154, 154, 154); font-weight: bold;">v1.0.3</a>
-  </p>
-</footer>
+    <!-- FOOTER -->
+    <footer style="background-color:#ffffff; color:#000; padding:5px 0; text-align:center; font-family:Arial, sans-serif; font-size:14px;">
+      <p style="margin:0;">
+        <strong>Devesh Acharya</strong> &nbsp;·&nbsp; 
+        <a href="https://github.com/Th3C0d3Mast3r/codeStalker" target="_blank" style="color:#000; text-decoration:none; margin:0 5px;">
+          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/github.svg" alt="GitHub" style="width:16px; height:16px; vertical-align:middle;">
+        </a> &nbsp;·&nbsp; 2025 ·&nbsp;
+        <a style="color: rgb(154, 154, 154); font-weight: bold;">v1.0.3</a>
+      </p>
+    </footer>
+  </div>
 
 <script src="popup.js"></script>
 

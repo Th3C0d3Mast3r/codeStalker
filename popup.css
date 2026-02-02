@@ -281,3 +281,8 @@ button.btn:hover {
   padding:0;
   margin-top:10px;
 }
+
+.app-wrapper{
+  width:400px;
+  margin:0 auto;
+}
